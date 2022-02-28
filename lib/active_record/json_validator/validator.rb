@@ -22,7 +22,7 @@ class JsonValidator < ActiveModel::EachValidator
 
     # Add error message to the attribute
     message(errors).each do |error|
-      record.errors.add(attribute, JSONSchemer::Errors.pretty(error), value: value)
+      record.errors.add(attribute, pretty_error(error), value: value)
     end
   end
 
@@ -58,6 +58,15 @@ protected
       when Proc then schema(record, record.instance_exec(&schema))
       when Symbol then schema(record, record.send(schema))
       else schema
+    end
+  end
+
+  def pretty_error(error)
+    case error
+    when Hash
+      JSONSchemer::Errors.pretty(error)
+    else
+      error
     end
   end
 
